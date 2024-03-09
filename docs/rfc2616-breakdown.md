@@ -49,3 +49,120 @@
 1. inbound/outbound - refer to the request and response paths for messages. inbound means travelling towards the origin server and outbound means travelling towards the user agent
 
 ## Overall Operation
+- Request/response protocol
+- Client sends request to server in the form of
+    - request method
+    - URI
+    - protocol version
+
+    - MIME-like message
+        - request modifiers
+        - client information
+        - possible body content
+- Server responds with 
+    - status line
+        - message protocol version
+        - success/error code
+    - MIME-like message
+        - server information
+        - entity metainformation
+        - possible entity body content  
+- Most HTTP communication is initiated by a user agent towards an origin server
+- Some more complicated scenarios will include a proxy, gateway or tunnel(intermediaries)
+- Any intermediary other than a tunnel may employ the use of a cache for handling requests.
+- Default port is 80 - takes place in TCP/IP connections.
+- HTTP presumes a reliable transport. any protocol that has that can be used.
+- In HTTP/1.1 a connection can be used for one/more request/response exchanges although connections can be closed for a variety of reasons 
+
+## Basic Rules
+- HTTP/1.1 defines the sequence CR LF as the end of line marker for all protocol elements except the entity-body (\r\n). The end of line marker within an entity-body is defined by its associative media type
+- HTTP/1.1 header field values can be folded onto multiple lines if the continuation line begins with a space or horizontal tab. All linear whitespace including folding has the same semantics as SP.
+- A recipient may replace any linear whitespace with a single SP before interpreting the field value or forwarding the message downstream
+- The TEXT rule is only used for descriptive field contents and values that are not intended to be interpreted by the message parser
+- A CRLF is allowed in the definition of TEXT only as part of a header field continuation. it is expected that the following LWS will be replaced with a single SP before interpretation of the TEXT value
+- Many HTTP/1.1 header field values consist of words separated by LWS or special characters. These special characters must be in quoted string to be used within a parameter value.
+- Comments can be included in some HTTP header fields by sorrounding the comment text with parantheses. Comments are only allowed in fields containing "comment" as part of their field value definition. In all other fields, parantheses are considered part of the field value.
+- A string or text is considered a single word if its is quoted using double quote marks    
+- The backslash character MAY be used as a single-character quote mechanism only within quoted-string and comment constructs
+
+## Protocol Parameters
+### HTTP Version
+- HTTP uses *major.minor* numbering scheme to indicate versions.
+- allows sender to indicate the format of a message and its capacity understanding further HTTP communication, rather than features obtained via that communication.
+- version of an HTTP message is indicated by an HTTP-Version field in the first line of the messae
+- applications sending request and response messages must include an HTTP version
+- proxy and gateway applications must be careful when forwarding messages in protocol versions different from that of the application. 
+
+### Uniform Resource Identifiers
+- formatted strings which identify a resource via:
+    - name
+    - location
+    - any other characteristic
+- they can be represented in:
+    - absolute form
+    - relative form
+- HTTP does not place any limit on the length of a URI, a server should return 414 if a URI is longer than the server can handle
+
+### Date/Time formats
+- HTTP applications have historically allowed three different formats for the representation of date/time stamps:
+    - Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
+    - Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
+    - Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
+- Note: Recipients of date values are encouraged to be robust in accepting date values that may have been sent by non-HTTP applications, as is sometimes the case when retrieving or postingmessages via proxies/gateways to SMTP or NNTP.
+
+### Character Sets
+- HTTP uses the definition of character set as that described by MIME
+- HTTP character sets are identified by case-insensitive tokens
+- complete set of tokens is defined by the IANA character set registry
+
+### Content Codings
+- indicate an encoding transformation that has been or can be applied to an entity.
+- primarily used to allow a document to be compressed or otherwise usefully transformed without loosing the identity of its underlying media type and without loss of information.
+- all content coding values are case insensitive. although the value describes the content-coding, what is more important is that it indicates what decoding mechanism will be required to remove the encoding.
+- described by IANA and includes the following tokens
+    - gzip 
+    - compress
+    - deflate
+
+### Transfer Codings
+- indicate an encoding transformation that has been or may need to be applied to an entity-body in order to ensure 'safe transport' through the network.
+- differs from content coding in that the transfer coding is a property of the message, not the original entity
+- chunked encoding modifies the body of a message in order to transfer it as a series of chunks each with its own size indicator, followed by an optional footer containing entity-header fields.
+- this allows dynamically produced content to be transferred along with the information necessary for the recipient to verify that it has received the full message.
+- the chunked encoding is ended by a zero-sized chunk followed by the footer, which is terminated by an empty line. 
+- the purpose of the footer is to provide an efficient way to supply information about an entity that is generated dynamically; applications MUST NOT sendheader fields in the footer which are not explicitly defined as being appropriate for the footer, such as Content-MD5 or future extensions to HTTP for digital signatures or other facilities.
+- all HTTP/1.1 applications MUST be able to receive and decode the chunked transfer coding and must ignore transfer coding extensions they do not understand.
+
+### Media Types
+- Internet Media Types used in the Content-Type and Accept header fields in order to provide open and extensible data typing and type negotiation.
+- user agents that recognize the media type MUST process the parameters for that MIME type as described by that type/subtype definition.
+
+### Product Tokens
+- used to allow communicating applications to identify themselves by software name and version
+- should be short and precise
+
+### Quality Values
+- HTTP content negotiation uses short floating point  numbers to indicate the relative performance of various negotiable parameters.
+- a weight is normalized to a real number in the range 0 through 1 where 0 is the minimum and 1 is the maximum
+- HTTP/1.1 applications must not generate more than 3 digits after the decimal pint
+
+### Language Tags
+- identifies a natural language
+- used within Accept-Language and Content-Language fields
+
+### Entity Tags
+- used for comparing 2 or more entities from the same requested resource.
+- used in the following header fields 
+    - ETag 
+    - If-Match 
+    - If-None-Match  
+    - If-Range
+
+### Range Units
+- allows a client to request that only part of the response entity be included within the response.
+- used in following header fields
+    - Range
+    - Content-Range
+- only range unit defined by HTTP/1.1 is bytes
+
+## HTTP Messages
