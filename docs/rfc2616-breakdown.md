@@ -166,3 +166,137 @@
 - only range unit defined by HTTP/1.1 is bytes
 
 ## HTTP Messages
+### Message Types
+- 2 types
+    - request
+    - response
+- consist of:
+    - start line
+    - one or more headers
+    - empty line(line with nothing preceding CRLF) - indicating end of header fields
+    - optional message-body
+- if the server is reading the protocol stream and receives a CRLF first, it should ignore the CRLF
+
+### Message Headers
+- each header field consists of a name followed by ':' and the field value.
+- field names are case-insensitive
+- field value may be preceded by any amount of LWS, though a single SP is preffered.
+- header fields can be extended over multiple lines by preceding each extra line with atleast 1 SP or HT
+- headers order conventions (discussed below)
+    - general headers first
+    - request headers/response header
+    - entity headers
+
+### Message Body
+- used to carry the entity body associated with a request/response.
+- message body differs from entity body only when a transfer coding has been applied.
+- transfer-encoding must be set to indicate any transfer codings applied by an application to ensure safe and proper transfer of the message.
+- transfer-encoding is a property of the message, not of the entity
+- presence of a message-body in a request/response is signalled by the inclusion of following headers
+    - Content-Length
+    - Transfer-Encoding
+- not all request methods allow an entity-body
+- for response messages, whether or not a message body is included is dependent on both
+    - request method
+    - response status code
+        - those without
+            - 1xx
+            - 204
+            - 304
+
+### Message Length
+- when a message-body is included in a message, the length of that body is determined by one of the following
+    - any response message which MUST not include a message-body is always terminated by the first empty line after the header fields, regardless of the header fields present in the message.
+    - if a transfer-encoding header field is present and indicates that the chunked transfer coding has been applied then the length is defined by the chunked encoding.
+    - if a content length header field is present its value in bytes represents the length of the message body.
+    - if the message uses the media type multipart/byte-ranges which is self delimiting, then that defines the length. this media type must not be used unless the sender knows that the recipient can parse it
+    - by the server closing the connection
+    - if a request contains a message body and a content-length is not given, the server should respond with 400 if it cannot determine the length of the message or with 411(Length required) if it wishes to insists on receiving valid content length
+    - all HTTP/1.1 applications that receive entities MUST accept the chunked transfer coding thus allowing the mechanism to be used for messages when the message length cannot be determined in advance.
+    - messages MUST NOT include both Content-Length header and the chunked transfer encoding. if both are received the Content-Length must be ignored.
+    - when a Content-Length is given in a message where a message-body is allowed, its field value must exactly match the number of octets in the message-body. HTTP/1.1 user agents must notify the user when an invalid length is received and detected.
+
+### General Header Fields
+- have general applicability for both request and response messages but which do not apply to the entity being transferred
+- examples:
+    - Cache-Control
+    - Connection
+    - Date
+    - Pragma
+    - Transfer-Encoding
+    - Upgrade
+    - Via
+- unrecognized header fields are treated as entity header fields.
+
+## Request
+- structure
+    - request line
+    - headers
+    - CRLF
+    - message body
+
+### Request Line
+- begins with method token, followed by URI and then protocol version and ending with a CRLF
+- elements are separated by SP characters
+
+#### Method
+- indicates method to be performed on the resource identified by the URI
+- case sensitive
+- examples
+    - OPTIONS
+    - GET
+    - HEAD
+    - POST
+    - PUT
+    - DELETE
+    - TRACE
+- the list of methods allowed by a resource can be specified in an Allow header field 
+- the return code of the response always notifies the client whether a method is allowed or not
+- servers should return code 405 if the method is known by the server but not allowed for the specific resource
+- servers should return code 501(Not Implemented) if the method is unrecognized or not implemented by the server 
+- list of methods known by the server can be listed in a __Public__ response header
+- methods __GET__ and __HEAD__ must be supported all general purpose servers
+
+#### Request-URI
+- identifies the resource upon which to apply the request
+- BNF
+    - Request-URI = "*" | absoluteURI | abs_path
+- __"*"__ means that the request does not apply to a particular resource but to the server itself and is only allowed when the method does not necessarily apply to a resource e.g
+    - OPTIONS * HTTP/1.1
+- __absoluteURI__ is required when the request is being made to a proxy. the proxy is requested to forward the request or service it from a valid cache and return the response. in avoid to avoid request loops, a proxy MUST be able to recognize all of its server names e.g
+    - GET http://meliora.co.ke/articles HTTP/1.1
+- __abs_path__ is used to identify a resource on origin server or gateway. the absolute path of the URI MUST be trasmitted as the Request-URI and the network location of the URI MUST be transmitted in the __Host__ header field e.g
+    -  GET /articles HTTP/1.1
+    - Host: www.meliora.co.ke
+- If a proxy receives a request without any path in the Request-URI and the method specified is capable of supporting the asterisk form of request, then the last proxy on the request chain MUST forward the request with "*" as the final Request-URI. For example, the request
+
+
+### The Resource Identified by a Request
+- origin servers SHOULD be aware that the exact resource identified by an internet request is determined by examining both the __Request-URI__ and the __Host header field__
+- An origin server that does differentiate resources based on the host requested (virtual hosts or vanity hostnames) MUST use the following rules for determining the requested resource on an HTTP/1.1 request:
+    - if Request-URI is an absoluteURI, the host is part of the Request-URI. Any Host header field value in the request MUST be ignored.
+    - if the Request-URI is not an absoluteURI, and the request includes a Host header field, the host is determined by the Host header field value
+    - if the host as determined by rule 1 or 2 is not a valid host on the server, the response MUST be a 400 (Bad Request) error message.
+
+### Request Header Fields
+- allow client to pass additional information about the request and about the client itself to the server
+- examples:
+    - Accept                   
+    - Accept-Charset           
+    - Accept-Encoding          
+    - Accept-Language          
+    - Authorization            
+    - From                     
+    - Host                     
+    - If-Modified-Since        
+    - If-Match                 
+    - If-None-Match            
+    - If-Range                 
+    - If-Unmodified-Since      
+    - Max-Forwards             
+    - Proxy-Authorization      
+    - Range                    
+    - Referer                  
+    - User-Agent     
+
+## Response          
