@@ -300,3 +300,73 @@
     - User-Agent     
 
 ## Response          
+### Status Line
+- consists of
+    - HTTP Version
+    - numeric status code and associated textual representation
+- BNF
+    - Status Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+
+
+### Status Codes and Reason Phrases
+- classes
+    - 1XX - informational
+    - 2XX - success
+    - 3XX - redirection
+    - 4XX - client error
+    - 5XX - server error
+- status codes 
+    - 100 - continue
+    - 101 - switching protocols
+    - ----
+    - 200 - ok
+    - 201 - created
+    - 202 - accepted
+    - 203 - non-authoritative information
+    - 204 - no content
+    - 205 - reset content
+    - 206 - partial content
+    - ----
+    - 300 - multiple choices 
+    - 301 - moved permanently
+    - 302 - moved temporarily
+    - 303 - see other
+    - 304 - not modified
+    - 305 - use proxy
+    - ------
+    - 400 - bad request
+    - 401 - unauthorized
+    - 402 - payment required
+    - 403 - forbidden
+    - 404 - not found
+    - 405 - method not allowed
+    - 406 - not acceptable
+    - 407 - proxy authentication required
+    - 408 - request time-out
+    - 409 - conflict
+    - 410 - gone
+    - 411 - length required
+    - 412 - precondition failed
+    - 413 - request entity too large
+    - 414 - request URI too large
+    - 415 - unsupported media type
+    - -------
+    - 500 - internal server error
+    - 501 - not implemented
+    - 502 - bad gateway
+    - 503 - service unavailable
+    - 504 - gateway time out
+    - 505 - http version not supported
+
+### Response Header Fields
+- allow server to pass additional info about the response
+- examples
+    - Age
+    - Location
+    - Proxy-Authenticate
+    - Public
+    - Retry-After
+    - Server
+    - Vary
+    - Warning
+    - WWW-Authenticate
