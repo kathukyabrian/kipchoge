@@ -403,3 +403,68 @@
 
 ----
 - the length of an entity body is the length of the message body after the transfer codings have been removed
+
+## Connections
+### Persistent Connections
+- default behaviour of HTTP/1.1 
+- before, every HTTP request created a new TCP connection
+- advantages
+    - CPU time and memory is saved. less opening and closing of TCP connections
+    - reduced network congestion - reduced  TCP opens
+    - HTTP requests and responses can be *pipelined*. pipelining is whereby an http client can send multiple requests to a server without waiting for each response - a single TCP connection is used in this case.
+    - HTTP can evolve gracefully
+
+### Overall Operation
+- client and server have a mechanism to signal the end of a TCP connection. __Connection__ header field is used for this purpose. once a close has been signalled the client must not send any more requests on that connection
+
+
+### Negotiation
+- a server may assume that a HTTP/1.1 client intends to maintain a persisten connection unless a __Connection__ header with value __close__ was sent.
+- if a server chooses to close the connection immediately after sending the response it should send __Connection__ header with value __close__
+- an HTTP/1.1 client MAY expect a connection to remain open but would decide to keep it open based on whether the response from a server contains a Connection header with value __close__
+- If either the client or the server sends the close token in the Connection header, that request becomes the last one for the connection
+
+### Pipelining
+- a client that supports persistent connections may pipeline its requests
+- a server must send the responses in the same order the requests were received.
+- clients which assume persistent connections and pipeline immediately after connection establishment SHOULD be prepared to retry their connection if the first pipelined attempt fails 
+- if a client does such a retry, it MUST NOT pipeline before it knows the connection is persistent 
+- clients MUST also be prepared to resend their requests if the server closes the connection before sending all of the corresponding responses.
+
+### Proxy Servers
+- the proxy server MUST signal persistent connections separately with its clients and the origin servers (or other proxy servers) that it connects to. each persistent connection applies to only one transport link
+- a proxy server MUST NOT establish a persistent connection with an HTTP/1.0 client.
+
+
+### Message Transmission Requirements
+- HTTP/1.1 servers SHOULD maintain persistent connections and use TCP's flow control mechanisms to resolve temporary overloads, rather than terminating connections with the expectation that clients will retry. The latter technique can exacerbate network congestion
+- An HTTP/1.1 (or later) client sending a message-body SHOULD monitor the network connection for an error status while it is transmitting the request. If the client sees an error status, it SHOULD immediately cease transmitting the body. If the body is being sent using a "chunked" encoding (section 3.6), a zero length chunk and empty footer MAY be used to prematurely mark the end of the message. If the body was preceded by a Content-Length header, the client MUST close the connection.
+- An HTTP/1.1 (or later) client MUST be prepared to accept a 100(Continue) status followed by a regular response.
+- An HTTP/1.1 (or later) server that receives a request from a HTTP/1.0 (or earlier) client MUST NOT transmit the 100 (continue) response; it SHOULD either wait for the request to be completed normally (thus avoiding an interrupted request) or close the connection prematurely.
+    - pon receiving a method subject to these requirements from an HTTP/1.1 (or later) client, an HTTP/1.1 (or later) server MUST either respond with 100 (Continue) status and continue to read from the input stream, or respond with an error status. If it responds with an error status, it MAY close the transport (TCP) connection or it MAY continue to read and discard the rest of the request. It MUST NOT perform the requested method if it returns an error status.
+- Clients SHOULD remember the version number of at least the most recently used server; if an HTTP/1.1 client has seen an HTTP/1.1 or later response from the server, and it sees the connection close before receiving any status from the server, the client SHOULD retry the request without user interaction so long as the request method is idempotent (see section 9.1.2); other methods MUST NOT be automatically retried, although user agents MAY offer a human operator the choice of retrying the request.. If the client does retry the request, the client
+    - MUST first send the request header fields, and then
+    - MUST wait for the server to respond with either a 100 (Continue) response, in which case the client should continue, or with an error status.
+- If an HTTP/1.1 client has not seen an HTTP/1.1 or later response from the server, it should assume that the server implements HTTP/1.0 or older and will not use the 100 (Continue) response. If in this case the client sees the connection close before receiving any status from the server, the client SHOULD retry the request. If the client does retry the request to this HTTP/1.0 server, it should use the following "binary exponential backoff" algorithm to be assured of obtaining a reliable response:
+    1. Initiate a new connection to the server
+
+    1. Transmit the request-headers
+
+    1. Initialize a variable R to the estimated round-trip time to the server (e.g., based on the time it took to establish the connection), or to a constant value of 5 seconds if the round-trip time is not available.
+
+    1. Compute T = R * (2**N), where N is the number of previous retries of this request.
+    
+    1. Wait either for an error response from the server, or for T seconds(whichever comes first)
+
+    1. If no error response is received, after T seconds transmit the body of the request.
+
+    1. If client sees that the connection is closed prematurely, repeat from step 1 until the request is accepted, an error response is received, or the user becomes impatient and terminates the retry process.
+
+- no matter the version, if an error code is received, the client
+    - MUST NOT continue and
+    - MUST close the connection if it has not completed sending the
+     message.
+
+- An HTTP/1.1 (or later) client that sees the connection close after receiving a 100 (Continue) but before receiving any other status SHOULD retry the request, and need not wait for 100 (Continue) response (but MAY do so if this simplifies the implementation)
+
+## Method Definitions
