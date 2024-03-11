@@ -307,7 +307,6 @@
 - BNF
     - Status Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
 
-
 ### Status Codes and Reason Phrases
 - classes
     - 1XX - informational
@@ -370,3 +369,37 @@
     - Vary
     - Warning
     - WWW-Authenticate
+
+## Entity
+- request and response may transfer an entity if not otherwise restricted by the request method or response status code
+- entity consists of
+    - entity-header fields
+    - entity-body
+
+### Entity Header Fields
+- define optional meta-info about the entity-body or, if no body is present about the resource identified by the request.
+- examples
+    - Allow
+    - Content-Base
+    - Content-Encoding
+    - Content-Language
+    - Content-Length
+    - Content-Location
+    - Content-MD5
+    - Content-Range
+    - Content-Type
+    - ETag
+    - Expires
+    - Last-Modified
+    - extension header
+
+### Entity Body
+- when an entity body is included with a message, the data type of that body is determined via the Content-Type and Content-Encoding header fields
+    - __entity-body := Content-Encoding( Content-Type( data ) )__
+
+- any HTTP/1.1 message containing an entity-body SHOULD include a Content-Type header
+- if and only if a content type is not given the recipient MAY attempt to guess it by analyzing the message or using the extension given
+- if the media type remains unknown the recipient SHOULD treat it as type __*application/octet-stream*__
+
+----
+- the length of an entity body is the length of the message body after the transfer codings have been removed
