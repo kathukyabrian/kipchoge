@@ -468,3 +468,91 @@
 - An HTTP/1.1 (or later) client that sees the connection close after receiving a 100 (Continue) but before receiving any other status SHOULD retry the request, and need not wait for 100 (Continue) response (but MAY do so if this simplifies the implementation)
 
 ## Method Definitions
+### Safe and Idempontent Methods
+- a __safe__ method is one that should never have any significance other than retrieval e.g GET and HEAD
+- other like POST, PUT and DELETE are unsafe in that they have other 'unsafe' efffects i.e creation, update and deletion respectively
+----
+- idempotence on the other hand means that apart from error or expiration the side effects of N>0 identical requests is the same for a single request
+- examples include:
+    - GET
+    - HEAD
+    - PUT 
+    - DELETE
+
+### OPTIONS
+- represents a request for information about the communication options available on the request/response chain identified by the Request-URI
+- responses to this method are not cacheable
+- if the Request-URI is an __*__ then the request refers to the server itself.
+- a 200 response should include any header fields which indicate optional features implemented by the server e.g Public
+- an __OPTIONS *__ request can  be applied through a proxy by specifying the destination server in the Request-URI without any path information
+- if the Request-URI is not an asterisk, the OPTIONS request applies only to the options that are available when communicating with that resource
+
+
+### GET
+- retrieves whatever information is identified by the Request-URI
+- if the Request-URI refers
+   to a data-producing process, it is the produced data which shall be returned as the entity in the response and not the source text of the process, unless that text happens to be the output of the process.
+- the semantics of the GET method change to a "conditional GET" if the request message includes an If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match, or If-Range header field.
+- a conditional GET method requests that the entity be transferred only under the circumstances that the conditional header is met.
+- the conditional GET method is intended to reduce unnecessary network usage by allowing cached entities to be refreshed without requiring multiple requests or transferring data already held by the client.
+- the semantics of the GET method change to a "partial GET" if the request message includes a Range header field. 
+- a partial GET requests that only part of the entity be transferred, as described in section 14.36. The partial GET method is intended to reduce unnecessary network usage by allowing partially-retrieved entities to be completed without transferring data already held by the client.
+- the response to a GET request is cachable if and only if it meets the requirements for HTTP caching 
+
+### HEAD
+- HEAD method is identical to GET except that the server MUST NOT
+ return a message-body in the response.the metainformation contained in the HTTP headers in response to a HEAD request SHOULD be identical to the information sent in response to a GET request
+ - This method can
+   be used for obtaining metainformation about the entity implied by the
+   request without transferring the entity-body itself. This method is
+   often used for 
+    - testing hypertext links for validity, accessibility,
+   and recent modification.
+- the response to a HEAD request may be cachable in the sense that the information contained in the response may be used to update a previously cached entity from that resource. 
+- if the new field values indicate that the cached entity differs from the current entity (as would be indicated by a change in Content-Length, Content-MD5, ETag or Last-Modified), then the cache MUST treat the cache entry as stale.
+
+### POST
+- POST method is used to request that the destination server accept the entity enclosed in the request as a new subordinate of the resource identified by the Request-URI in the Request-Line
+- designed to allow a uniform method to:
+    - annotation of existing resources
+    - posting a message to a bulletin board, newsgroup, mailing list, or similar group of articles;
+    - providing a block of data, such as the result of submitting a form, to a data-handling process
+    - extending a database through an append operation
+
+- the actual function performed by the POST method is determined by the server and is usually dependent on the Request-URI
+- the action performed by the POST method might not result in a resource that can be identified by a URI. In this case, either 200(OK) or 204 (No Content) is the appropriate response status, depending on whether or not the response includes an entity that describes the result.
+- if a resource has been created on the origin server, the response SHOULD be 201 (Created) and contain an entity which describes the status of the request and refers to the new resource, and a Location header
+- responses to this method are not cachable, unless the response includes appropriate Cache-Control or Expires header fields. However, the 303 (See Other) response can be used to direct the user agent to retrieve a cachable resource.
+
+### PUT
+- PUT method requests that the enclosed entity be stored under the supplied Request-URI
+- if the Request-URI refers to an already existing resource, the enclosed entity SHOULD be considered as a modified version of the one residing on the origin server. 
+- if the Request-URI does not point to an existing resource, and that URI is capable of being defined as a new resource by the requesting user agent, the origin server can create the resource with that URI. 
+- if a new resource is created, the origin server MUST inform the user agent via the 201 (Created) response.  
+- if an existing resource is modified, either the 200 (OK) or 204 (No Content) response codes SHOULD be sent to indicate successful completion of the request.
+- if the request passes through a cache and the Request-URI identifies one or more currently cached entities, those entries should be treated as stale. Responses to this method are not cachable.
+
+### DELETE
+- DELETE method requests that the origin server delete the resource identified by the Request-URI 
+- MAY be overridden by human intervention (or other means) on the origin server
+- the client cannot
+   be guaranteed that the operation has been carried out, even if the
+   status code returned from the origin server indicates that the action
+   has been completed successfully.    
+- however, the server SHOULD not
+   indicate success unless, at the time the response is given, it
+   intends to delete the resource or move it to an inaccessible
+   location.
+- a successful response SHOULD be 200 (OK) if the response includes an entity describing the status, 202 (Accepted) if the action has not yet been enacted, or 204 (No Content) if the response is OK but does not include an entity.
+-  if the request passes through a cache and the Request-URI identifies one or more currently cached entities, those entries should betreated as stale. Responses to this method are not cachable.
+
+### TRACE
+- TRACE method is used to invoke a remote, application-layer loop-back of the request message
+- final recipient of the request SHOULD reflect the message received back to the client as the entity-body of a 200 (OK) response
+- The final recipient is either the origin server or the first proxy or gateway to receive a Max-Forwards value of zero (0) in the request. A TRACE request MUST NOT include an entity.
+- allows the client to see what is being received at the other end of the request chain and use that data for testing or diagnostic information
+- he value of the Via header field is of particular interest, since it acts as a trace of the request chain. 
+- use of the Max-Forwards header field allows the client to limit the length of the request chain, which is useful for testing a chain of proxies forwarding messages in an infinite loop 
+- if successful, the response SHOULD contain the entire request message in the entity-body, with a Content-Type of "message/http". Responses to this method MUST NOT be cached.
+
+## Status Code Definitions
