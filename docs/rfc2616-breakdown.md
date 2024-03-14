@@ -556,3 +556,55 @@
 - if successful, the response SHOULD contain the entire request message in the entity-body, with a Content-Type of "message/http". Responses to this method MUST NOT be cached.
 
 ## Status Code Definitions
+1xx(informational)
+---
+### 100 Continue
+- the client may continue with its request
+- used to inform client that the initial part of the request has been received and has not yet been rejected by the server
+- the client should continue by
+    - sending the remainder of the request or
+    - if the request has already been completed ignoring this response
+
+### 101 Switching Protocols
+- the server and understands and is willing to comply with the client's request via the Upgrade message header to change the application protocol being used on this connection.
+- the server will switch protocols to those defined by the response's __Upgrade__ header immediately after the empty line which terminates the 101 response.
+- the protocol should only be switched when it's advantageous to do so.
+
+2xx(Successful)
+---------
+### 200 OK
+- the request has succeeded
+
+### 201 CREATED
+- request has been fulfilled and has resulted in a new resource being created.
+- the newly created resource can be referenced by the URI(s) returned in the entity of the response with the most specific URL for the resource given by __Location__ header field.
+- origin server should create the resource before returning 201, if it is unable to do it should return 202
+
+### 202 ACCEPTED
+- request has been accepted for processing but the processing has not been completed.
+- intentionally non-committal. its purpose is to allow server to accept a request for some other process
+- entity returned should include an indication of the request's current status and either a pointer to a status monitor or some estimate of when the user can expect the request to be fulfilled.
+
+### 203 NON AUTHORITATIVE INFORMATION
+- the returned metainformation in the entity header is not the definitive set as available from the origin server but is gathered from a local or a third party copy
+- the set presented may be a subset or superset of the original version
+
+### 204 NO CONTENT
+- server has fulfilled the request but there is no new information to be sent back.
+- if the client is a user agent, it should not change its document view from that which caused the request to be sent.
+- primarily intended to allow input for actions to take place without causing a change to the user agent's active document view.
+- must not include a message-body but can make use of header fields
+
+### 205 RESET CONTENT
+- server has fulfilled the request and the user agent SHOULD reset the document view which caused the request to be sent.
+- primarily inteneded to allow input for actions to take place via user input followed by a clearing of the form in which the input is given so that the user can easily initiate another input action
+- response must NOT include entity body
+
+### 206 PARTIAL CONTENT
+- the server has fulfilled the partial GET request for the resource.
+- the request must have included a __Range__ header field indicating the desired range.
+- response must include either a __Content-Range__ header field indicating the range included with this response or multipart/byteranges __Content-Type__ including __Content-Range__ fields for each part
+- if Multipart/byteranges is not used the __Content-Length__ header field in the response MUST match the actual number of octets transmitted in the message body
+
+3xx Redirection
+---- 
