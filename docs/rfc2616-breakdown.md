@@ -607,4 +607,32 @@
 - if Multipart/byteranges is not used the __Content-Length__ header field in the response MUST match the actual number of octets transmitted in the message body
 
 3xx Redirection
----- 
+----
+### 300 MULTIPLE CHOICES
+- requested resource corresponds to any one of a set of representations, each with its own specific location, and agent- driven negotiation information is being provided so that the user can choose a preffered representation and redirect its request to that location.
+
+### 301 MOVED PERMANENTLY
+- the requested resource has been assigned a new permanent URI 
+- if the new URI is a location, its location should be given in the __Location__ header 
+
+### 302 MOVED TEMPORARILY
+- requested resource resides temporarily under a different URI.
+
+### 303 SEE OTHER
+- response to the request can be found under a different URI and SHOULD be retrieved using a GET method on that resource.
+
+### 304 NOT MODIFIED
+- if the client has performed a conditional GET request and access is allowed but the document has not been modified
+- response must not contain a message-body
+- response must include following header fields
+    - Date 
+    - ETag and or Content-Location if the header would have been sent in a 200 response of the same request
+    - Expires, Cache-Control and or Vary
+
+### 305 USE PROXY
+- the requested resource must be accessed through the proxy given by the __Location__ field 
+- recipient is expected to repeat the request via the proxy
+
+4xx (Client Error)
+-----
+
