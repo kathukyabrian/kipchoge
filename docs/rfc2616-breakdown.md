@@ -636,3 +636,29 @@
 4xx (Client Error)
 -----
 
+
+5xx (Server Error)
+----
+### 500 INTERNAL SERVER ERROR
+- server encountered an unexpected condition which prevented it from fulfilling the request
+
+### 501 NOT IMPLEMENTED
+- server does not support the functionality required to fulfill the request e.g request method not supported
+
+### 502 BAD GATEWAY
+- the server while acting as a gateway/proxy received an invalid response from the upstream server it accessed in attempting to fulfill the request
+
+### 503 SERVICE UNAVAILABLE
+- server is currently unable to handle the request due to a temporary overloading or maintenance of the server
+- implication is that this is a temporary condition which will be alleviated after some delay
+- if known, the length of the delay may be indicated in the __Retry-After__ header, else the client should handle the response as it would handle a 500 response
+
+### 504 GATEWAY TIMEOUT
+- server while acting as a gateway or proxy did not receive a timely response from the upstream server it accessed to service the request
+
+### 505 HTTP VERSION NOT SUPPORTED
+- the server does not support or refuses to support the HTTP version that was used in the request message
+- the response SHOULD contain an entity describing why that version is not supported and what other protocols are supported by that server.
+
+
+## Access Authentication
