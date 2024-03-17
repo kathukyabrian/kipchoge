@@ -635,7 +635,72 @@
 
 4xx (Client Error)
 -----
+### 400 BAD REQUEST
+- The request could not be understood by the server due to malformed syntax. - The client SHOULD NOT repeat the request without modifications.
 
+### 401 UNAUTHORIZED
+- request requires user auth
+- response must include __WWW-Authenticate__ header field containing a challenge applicable to the requested resource.
+- client may repeat the request with a suitable __Authorization__ header field
+- if the request included an __Authorization__ field, then response 401 indicates authorization has been refused for those credentials.
+
+### 402 PAYMENT REQUIRED
+- reserved for future use
+
+### 403 FORBIDDEN
+- server understood the request but is refusing to fulfill it.
+- authorization will not help and the request should not be repeated.
+
+### 404 NOT FOUND
+- server has not found anything matching the request URI
+
+### 405 METHOD NOT ALLOWED
+- the method specified in the request line is not available for the specified request URI
+- response must include __Allow__ header indicating the allowed methods for that resource
+
+### 406 NOT ACCEPTABLE
+- resource identified by the request is only capable of generating response entities which have content x-tics not acceptable according to the accept header sent in the request.
+- unless it was a HEAD request, the response SHOULD include an entity containing a list of available entity characteristics and location(s) from which the user or user agent can choose the one most appropriate.  
+- the entity format is specified by the media type given in the Content-Type header field. Depending upon the format and the capabilities of the user agent, selection of the most appropriate choice may be performed automatically. However, this specification does not define any standard for such automatic selection.
+
+### 407 PROXY AUTHENTICATION REQUIRED
+- similar to __401__ but indicates that the client MUST first authenticate itself with the proxy.
+- proxy must return a __Proxy-Authenticate__ header field containing a challenge applicable to the proxy for the requested resource
+
+### 408 REQUEST TIMEOUT
+- client did not produce a request within the time that the server was prepared to wait
+
+### 409 CONFLICT
+- the request could not be completed due to a conflict with the current state of the resource. 
+- this code is only allowed in situations where it is expected that the user might be able to resolve the conflict and resubmit the request. 
+- the response body SHOULD include enough information for the user to recognize the source of the conflict.
+- ideally, the response entity would include enough information for the user or user agent to fix the problem however, that may not be possible and is not required.
+- conflicts are most likely to occur in response to a PUT request. If versioning is being used and the entity being PUT includes changes to a resource which conflict with those made by an earlier (third-party) request, the server MAY use the 409 response to indicate that it can't complete the request. 
+- in this case, the response entity SHOULD contain a list of the differences between the two versions in a format defined by the response __Content-Type__.
+
+### 410 GONE
+- the requested resource is no longer available at the server and no forwarding address is known. this condition SHOULD be considered permanent. 
+- if the server does not know, or has no facility to determine, whether or not the condition is permanent, the status code 404 (Not Found) SHOULD be used instead.
+
+### 411 LENGTH REQUIRED
+- server refuses to accept the request without a defined __Content-Length__. 
+- the client MAY repeat the request if it adds a valid Content-Length header field containing the length of the message-body in the request message.
+
+### 412 PRECONDITION FAILED
+- precondition given in one or more of the request-header fields evaluated to false when it was tested on the server. 
+- this response code allows the client to place preconditions on the current resource metainformation (header field data) and thus prevent the requested method from being applied to a resource other than the one intended.
+
+### 413 REQUEST ENTITY TOO LARGE
+- server is refusing to process a request because the request entity is larger than the server is willing or able to process. 
+- server may close the connection to prevent the client from continuing the request.
+
+### 414 REQUEST URI TOO LONG
+- the server is refusing to service the request because the Request-URI is longer than the server is willing to interpret. 
+- this rare condition is only likely to occur when a client has improperly converted a POST request to a GET request with long query information, when the client has descended into a URL "black hole" of redirection (e.g., a redirected URL prefix that points to a suffix of itself)
+-  or when the server is under attack by a client attempting to exploit security holes present in some servers using fixed-length buffers for reading or manipulating the Request-URI.
+
+### 415 UNSUPPORTED MEDIA TYPE
+- the server is refusing to service the request because the entity of the request is in a format not supported by the requested resource for the requested method.
 
 5xx (Server Error)
 ----
