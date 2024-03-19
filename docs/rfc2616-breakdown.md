@@ -727,7 +727,8 @@
 
 
 ## Access Authentication
-- HTTP provides several optional challenge-response authentication mechanisms which can be used by the server to __challenge__ a client request and by a client to provide authentication information.
+- HTTP provides several optional 
+-response authentication mechanisms which can be used by the server to __challenge__ a client request and by a client to provide authentication information.
 - 401 unauthorized message is used by server to challenge the authorization of a user agent. this response MUST include a WWW-Authenticate header field containing atleast 1 challenge applicable to the requested resource.
 - proxies MUST be completely transparent regarding user agent authentication. That is, they MUST forward the WWW-Authenticate and Authorization headers untouched.
 - HTTP/1.1 allows a client to pass authentication information to and
@@ -741,3 +742,11 @@ headers.
 - defined later
 
 ## Content Negotiation
+- meant to give a representation of data
+- 3 kinds
+    + server-driven negotiation
+    + agent-driven negotiation
+    + transparent negotiation
+
+
+## Caching in HTTP
