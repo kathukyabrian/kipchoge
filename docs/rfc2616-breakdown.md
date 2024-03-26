@@ -750,3 +750,11 @@ headers.
 
 
 ## Caching in HTTP
+### Cache Correctness
+- conditions
+    - it has been checked for equivalence with what the origin server would have responded with 
+    - it is fresh enough
+    - it is an appropriate 304(Not Modified), 305(Proxy Redirect) or error(4xx or 5xx) response message
+
+### Warnings
+- whenever a cache returns a response that is neither first hand nor fresh enough it MUST attach a warning to that effect using a **Warning** general header
