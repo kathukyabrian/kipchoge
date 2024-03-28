@@ -758,3 +758,4 @@ headers.
 
 ### Warnings
 - whenever a cache returns a response that is neither first hand nor fresh enough it MUST attach a warning to that effect using a **Warning** general header
+
